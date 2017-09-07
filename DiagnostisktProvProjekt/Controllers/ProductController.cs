@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DiagnostisktProvProjekt.Data;
 using DiagnostisktProvProjekt.Models;
+using DiagnostisktProvProjekt.Models.ProductViewModels;
 
 namespace DiagnostisktProvProjekt.Controllers
 {
@@ -46,7 +47,13 @@ namespace DiagnostisktProvProjekt.Controllers
         // GET: Product/Create
         public IActionResult Create()
         {
-            return View();
+            var viewModel = new CreateEditProductViewModel()
+            {
+                Product = new Product(),
+                AllProductCategories = _context.ProductCategories.ToList()
+            };
+
+            return View(viewModel);
         }
 
         // POST: Product/Create
@@ -54,15 +61,15 @@ namespace DiagnostisktProvProjekt.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,Name,Price")] Product product)
+        public async Task<IActionResult> Create(CreateEditProductViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(product);
+                _context.Add(viewModel.Product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(product);
+            return View(viewModel);
         }
 
         // GET: Product/Edit/5
@@ -73,12 +80,18 @@ namespace DiagnostisktProvProjekt.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products.SingleOrDefaultAsync(m => m.ProductId == id);
-            if (product == null)
+            var viewModel = new CreateEditProductViewModel()
+            {
+                Product = await _context.Products.SingleOrDefaultAsync(m => m.ProductId == id),
+                AllProductCategories = _context.ProductCategories.ToList()
+            };
+            
+            if (viewModel.Product == null)
             {
                 return NotFound();
             }
-            return View(product);
+
+            return View(viewModel);
         }
 
         // POST: Product/Edit/5
@@ -86,23 +99,18 @@ namespace DiagnostisktProvProjekt.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name,Price")] Product product)
+        public async Task<IActionResult> Edit(CreateEditProductViewModel viewModel)
         {
-            if (id != product.ProductId)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(product);
+                    _context.Update(viewModel.Product);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(product.ProductId))
+                    if (!ProductExists(viewModel.Product.ProductId))
                     {
                         return NotFound();
                     }
@@ -113,7 +121,7 @@ namespace DiagnostisktProvProjekt.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(product);
+            return View(viewModel);
         }
 
         // GET: Product/Delete/5
