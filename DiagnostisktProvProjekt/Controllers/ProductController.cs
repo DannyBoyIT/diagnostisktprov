@@ -8,21 +8,26 @@ using Microsoft.EntityFrameworkCore;
 using DiagnostisktProvProjekt.Data;
 using DiagnostisktProvProjekt.Models;
 using DiagnostisktProvProjekt.Models.ProductViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace DiagnostisktProvProjekt.Controllers
 {
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger _logger;
 
-        public ProductController(ApplicationDbContext context)
+        public ProductController(ApplicationDbContext context, ILogger<ProductController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: Product
         public async Task<IActionResult> Index()
         {
+            _logger.LogWarning("With great powers comes great responsibilities");
+
             var products = await _context.Products.Include(p => p.ProductCategory).ToListAsync();
 
             return View(products);
