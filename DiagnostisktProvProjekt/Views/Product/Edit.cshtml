@@ -22,10 +22,10 @@
                 <span asp-validation-for="Product.Price" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <select asp-for="Product.ProductCategory">
+                <select asp-for="SelectedProductCategoryId">
                     @foreach (var category in Model.AllProductCategories)
                     {
-                        <option value="@category">@category.Name</option>
+                        <option value="@category.Value">@category.Text</option>
                     }
                 </select>
             </div>

@@ -24,7 +24,7 @@
                 <select asp-for="SelectedProductCategoryId">
                     @foreach (var category in Model.AllProductCategories)
                     {
-                        <option value="@category.ProductCategoryId">@category.Name</option>
+                        <option value="@category.Value">@category.Text</option>
                     }
                 </select>
             </div>

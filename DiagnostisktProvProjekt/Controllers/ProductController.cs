@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DiagnostisktProvProjekt.Data;
 using DiagnostisktProvProjekt.Models;
 using DiagnostisktProvProjekt.Models.ProductViewModels;
 using Microsoft.Extensions.Logging;
+using DiagnostisktProvProjekt.Services;
 
 namespace DiagnostisktProvProjekt.Controllers
 {
@@ -16,11 +14,13 @@ namespace DiagnostisktProvProjekt.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger _logger;
+        private readonly ProductCategoryService _productCategoryService;
 
-        public ProductController(ApplicationDbContext context, ILogger<ProductController> logger)
+        public ProductController(ApplicationDbContext context, ILogger<ProductController> logger, ProductCategoryService productCategoryService)
         {
             _context = context;
             _logger = logger;
+            _productCategoryService = productCategoryService;
         }
 
         // GET: Product
@@ -57,7 +57,7 @@ namespace DiagnostisktProvProjekt.Controllers
             var viewModel = new CreateEditProductViewModel()
             {
                 Product = new Product(),
-                AllProductCategories = _context.ProductCategories.ToList()
+                AllProductCategories = _productCategoryService.GetProductCategories().ToList()
             };
 
             return View(viewModel);
@@ -94,7 +94,7 @@ namespace DiagnostisktProvProjekt.Controllers
             var viewModel = new CreateEditProductViewModel()
             {
                 Product = await _context.Products.SingleOrDefaultAsync(m => m.ProductId == id),
-                AllProductCategories = _context.ProductCategories.ToList()
+                AllProductCategories = _productCategoryService.GetProductCategories().ToList()
             };
             
             if (viewModel.Product == null)
@@ -116,6 +116,9 @@ namespace DiagnostisktProvProjekt.Controllers
             {
                 try
                 {
+                    var productCategory = _context.ProductCategories.Single(p => p.ProductCategoryId == viewModel.SelectedProductCategoryId);
+                    viewModel.Product.ProductCategory = productCategory;
+
                     _context.Update(viewModel.Product);
                     await _context.SaveChangesAsync();
                 }
