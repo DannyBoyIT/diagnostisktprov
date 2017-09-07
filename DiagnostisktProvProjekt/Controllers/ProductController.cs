@@ -23,7 +23,9 @@ namespace DiagnostisktProvProjekt.Controllers
         // GET: Product
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Products.ToListAsync());
+            var products = await _context.Products.Include(p => p.ProductCategory).ToListAsync();
+
+            return View(products);
         }
 
         // GET: Product/Details/5
@@ -65,6 +67,10 @@ namespace DiagnostisktProvProjekt.Controllers
         {
             if (ModelState.IsValid)
             {
+                var productCategory = _context.ProductCategories.Single(p => p.ProductCategoryId == viewModel.SelectedProductCategoryId);
+
+                viewModel.Product.ProductCategory = productCategory;
+
                 _context.Add(viewModel.Product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

@@ -9,5 +9,6 @@ namespace DiagnostisktProvProjekt.Models.ProductViewModels
     {
         public Product Product { get; set; }
         public List<ProductCategory> AllProductCategories { get; set; }
+        public int SelectedProductCategoryId { get; set; }
     }
 }

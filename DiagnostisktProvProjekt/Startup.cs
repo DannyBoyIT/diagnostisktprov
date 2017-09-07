@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using DiagnostisktProvProjekt.Data;
 using DiagnostisktProvProjekt.Models;
 using DiagnostisktProvProjekt.Services;
+using PizzaDeluxe.Data;
 
 namespace DiagnostisktProvProjekt
 {
@@ -40,7 +41,7 @@ namespace DiagnostisktProvProjekt
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ApplicationDbContext context)
         {
             if (env.IsDevelopment())
             {
@@ -63,6 +64,8 @@ namespace DiagnostisktProvProjekt
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            DbInitializer.Initialize(context);
         }
     }
 }
